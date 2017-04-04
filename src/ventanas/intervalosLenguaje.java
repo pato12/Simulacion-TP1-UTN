@@ -64,11 +64,6 @@ public class intervalosLenguaje extends javax.swing.JFrame {
 
         cantidadIntervalos.add(jRadioButton1);
         jRadioButton1.setText("5");
-        jRadioButton1.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                jRadioButton1ActionPerformed(evt);
-            }
-        });
 
         cantidadIntervalos.add(jRadioButton2);
         jRadioButton2.setText("10");
@@ -78,13 +73,10 @@ public class intervalosLenguaje extends javax.swing.JFrame {
 
         tabla.setModel(new javax.swing.table.DefaultTableModel(
             new Object [][] {
-                {null, null, null, null},
-                {null, null, null, null},
-                {null, null, null, null},
-                {null, null, null, null}
+
             },
             new String [] {
-                "Title 1", "Title 2", "Title 3", "Title 4"
+
             }
         ));
         jScrollPane1.setViewportView(tabla);
@@ -152,10 +144,6 @@ public class intervalosLenguaje extends javax.swing.JFrame {
         setLocationRelativeTo(null);
     }// </editor-fold>//GEN-END:initComponents
 
-    private void jRadioButton1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jRadioButton1ActionPerformed
-        // TODO add your handling code here:
-    }//GEN-LAST:event_jRadioButton1ActionPerformed
-
     private void jButton1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton1ActionPerformed
         try {
             int T = this.getIntervalos();
@@ -214,10 +202,6 @@ public class intervalosLenguaje extends javax.swing.JFrame {
 
         String n = nf.format(numero);
         return Double.parseDouble(n.replace(',', '.'));
-    }
-
-    private void cargarTabla(Object[][] datos) {
-        tabla.setModel(new DefaultTableModel(datos, columnas));
     }
 
     private int getIntervalos() {
