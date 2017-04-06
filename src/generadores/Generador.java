@@ -11,4 +11,5 @@ package generadores;
  */
 public interface Generador {
     public double nextNumber();
+    public void setOptimo(int k, int g);
 }

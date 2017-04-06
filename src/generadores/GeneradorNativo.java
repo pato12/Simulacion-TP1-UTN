@@ -15,4 +15,7 @@ public class GeneradorNativo implements Generador {
         return Math.random();
     }
 
+    public void setOptimo(int k, int g) {
+    }
+
 }

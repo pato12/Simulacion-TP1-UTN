@@ -10,6 +10,9 @@ import java.text.*;
 import java.util.*;
 import javax.swing.*;
 import javax.swing.table.*;
+import org.jfree.chart.*;
+import org.jfree.chart.plot.*;
+import org.jfree.data.category.*;
 
 /**
  *
@@ -20,6 +23,7 @@ public class intervalosLenguaje extends javax.swing.JFrame {
     private String[] columnas = new String[]{"Intervalo", "Frecuencia observada", "Freciencia esperada"};
     private DefaultTableModel modelo;
     private Generador generador;
+
     /**
      * Creates new form intervalosLenguaje
      */
@@ -28,7 +32,6 @@ public class intervalosLenguaje extends javax.swing.JFrame {
 
         modelo = new DefaultTableModel(null, columnas);
         tabla.setModel(modelo);
-        generador = new GeneradorNativo();
     }
 
     public Generador getGenerador() {
@@ -38,8 +41,6 @@ public class intervalosLenguaje extends javax.swing.JFrame {
     public void setGenerador(Generador generador) {
         this.generador = generador;
     }
-    
-    
 
     /**
      * This method is called from within the constructor to initialize the form.
@@ -60,9 +61,9 @@ public class intervalosLenguaje extends javax.swing.JFrame {
         jScrollPane1 = new javax.swing.JScrollPane();
         tabla = new javax.swing.JTable();
         jButton1 = new javax.swing.JButton();
-        jButton2 = new javax.swing.JButton();
+        button_graficar = new javax.swing.JButton();
 
-        setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
+        setDefaultCloseOperation(javax.swing.WindowConstants.DISPOSE_ON_CLOSE);
         setTitle("Simulación");
 
         cantidadNumeros.setName("cantidadNumeros"); // NOI18N
@@ -97,10 +98,11 @@ public class intervalosLenguaje extends javax.swing.JFrame {
             }
         });
 
-        jButton2.setText("Graficar");
-        jButton2.addActionListener(new java.awt.event.ActionListener() {
+        button_graficar.setText("Graficar");
+        button_graficar.setEnabled(false);
+        button_graficar.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
-                jButton2ActionPerformed(evt);
+                button_graficarActionPerformed(evt);
             }
         });
 
@@ -117,7 +119,7 @@ public class intervalosLenguaje extends javax.swing.JFrame {
                     .addComponent(jRadioButton1)
                     .addComponent(jLabel2)
                     .addComponent(jButton1)
-                    .addComponent(jButton2)
+                    .addComponent(button_graficar)
                     .addComponent(cantidadNumeros))
                 .addGap(36, 36, 36)
                 .addComponent(jScrollPane1, javax.swing.GroupLayout.DEFAULT_SIZE, 528, Short.MAX_VALUE)
@@ -141,7 +143,7 @@ public class intervalosLenguaje extends javax.swing.JFrame {
                 .addGap(29, 29, 29)
                 .addComponent(jButton1)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                .addComponent(jButton2)
+                .addComponent(button_graficar)
                 .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
             .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
                 .addGap(19, 19, 19)
@@ -171,39 +173,39 @@ public class intervalosLenguaje extends javax.swing.JFrame {
 
             Integer[] frecuencias = new Integer[T];
 
+            for (int i = 0; i < T; i++) {
+                frecuencias[i] = 0;
+            }
+
             for (int i = 0; i < N; i++) {
                 double num = generarNextNumero();
                 double div = (num / magnitud);
-                int casillero = div % magnitud == 0? (int) div : ((int) Math.ceil(div)) - 1 ;
-                
-                if(casillero == T) {
+                int casillero = div % magnitud == 0 ? (int) div : ((int) Math.ceil(div)) - 1;
+
+                if (casillero == T) {
                     System.out.println("errorr:   " + casillero);
-                continue;
+                    continue;
                 }
 
-                if (frecuencias[casillero] == null) {
-                    frecuencias[casillero] = 1;
-                } else {
-                    frecuencias[casillero]++;
-                }
+                frecuencias[casillero]++;
             }
-            
+
             modelo.setRowCount(0);
-            
+
             for (int i = 0; i < T; i++) {
                 int esperado = N / T;
-                modelo.addRow(new Object[]{ intervalos[i], frecuencias[i], esperado, 0});
+                modelo.addRow(new Object[]{intervalos[i], frecuencias[i], esperado, 0});
             }
 
-
+            button_graficar.setEnabled(true);
         } catch (Exception e) {
             JOptionPane.showMessageDialog(null, "Error! Corrobore los datos y vuelva a intentar.");
         }
     }//GEN-LAST:event_jButton1ActionPerformed
 
-    private void jButton2ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton2ActionPerformed
-        // TODO add your handling code here:
-    }//GEN-LAST:event_jButton2ActionPerformed
+    private void button_graficarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_button_graficarActionPerformed
+        Graficar();
+    }//GEN-LAST:event_button_graficarActionPerformed
 
     private double generarNextNumero() {
         return generador.nextNumber();
@@ -229,6 +231,27 @@ public class intervalosLenguaje extends javax.swing.JFrame {
         }
 
         return 0;
+    }
+
+    private void Graficar() {
+        DefaultCategoryDataset Datos = new DefaultCategoryDataset();
+
+        int values = modelo.getRowCount();
+
+        for (int j = 0; j < values; j++) {
+            double intervalo = (double) modelo.getValueAt(j, 0);
+            int fo = (int) modelo.getValueAt(j, 1);
+
+            Datos.addValue(fo, "Frecuencia observada", "" + intervalo);
+        }
+
+        JFreeChart Grafica = ChartFactory.createBarChart("Frecuencia observada", "Intervalos", "Frecuencia", Datos, PlotOrientation.VERTICAL, true, true, false);
+        ChartPanel Panel = new ChartPanel(Grafica);
+
+        JFrame Ventana = new JFrame("Grafico de frecuencias observadas");
+        Ventana.getContentPane().add(Panel);
+        Ventana.pack();
+        Ventana.setVisible(true);
     }
 
     /**
@@ -267,10 +290,10 @@ public class intervalosLenguaje extends javax.swing.JFrame {
     }
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
+    private javax.swing.JButton button_graficar;
     private javax.swing.ButtonGroup cantidadIntervalos;
     private javax.swing.JTextField cantidadNumeros;
     private javax.swing.JButton jButton1;
-    private javax.swing.JButton jButton2;
     private javax.swing.JLabel jLabel1;
     private javax.swing.JLabel jLabel2;
     private javax.swing.JRadioButton jRadioButton1;
