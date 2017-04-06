@@ -5,14 +5,11 @@
  */
 package ventanas;
 
-import java.text.NumberFormat;
-import java.util.Enumeration;
-import java.util.StringTokenizer;
-import javax.swing.AbstractButton;
-import javax.swing.ButtonModel;
-import javax.swing.JOptionPane;
-import javax.swing.table.DefaultTableModel;
-import javax.swing.table.TableModel;
+import generadores.*;
+import java.text.*;
+import java.util.*;
+import javax.swing.*;
+import javax.swing.table.*;
 
 /**
  *
@@ -20,8 +17,9 @@ import javax.swing.table.TableModel;
  */
 public class intervalosLenguaje extends javax.swing.JFrame {
 
-    private String[] columnas = new String[]{"Intervalo", "Frecuencia observada", "Freciencia esperada", "X^2"};
+    private String[] columnas = new String[]{"Intervalo", "Frecuencia observada", "Freciencia esperada"};
     private DefaultTableModel modelo;
+    private Generador generador;
     /**
      * Creates new form intervalosLenguaje
      */
@@ -30,7 +28,18 @@ public class intervalosLenguaje extends javax.swing.JFrame {
 
         modelo = new DefaultTableModel(null, columnas);
         tabla.setModel(modelo);
+        generador = new GeneradorNativo();
     }
+
+    public Generador getGenerador() {
+        return generador;
+    }
+
+    public void setGenerador(Generador generador) {
+        this.generador = generador;
+    }
+    
+    
 
     /**
      * This method is called from within the constructor to initialize the form.
@@ -164,9 +173,13 @@ public class intervalosLenguaje extends javax.swing.JFrame {
 
             for (int i = 0; i < N; i++) {
                 double num = generarNextNumero();
-                int casillero = (int) Math.ceil(num / magnitud) - 1;
+                double div = (num / magnitud);
+                int casillero = div % magnitud == 0? (int) div : ((int) Math.ceil(div)) - 1 ;
                 
-                if(casillero == T) continue;
+                if(casillero == T) {
+                    System.out.println("errorr:   " + casillero);
+                continue;
+                }
 
                 if (frecuencias[casillero] == null) {
                     frecuencias[casillero] = 1;
@@ -193,7 +206,7 @@ public class intervalosLenguaje extends javax.swing.JFrame {
     }//GEN-LAST:event_jButton2ActionPerformed
 
     private double generarNextNumero() {
-        return Math.random();
+        return generador.nextNumber();
     }
 
     private double truncarNumero(double numero, int decimales) {
